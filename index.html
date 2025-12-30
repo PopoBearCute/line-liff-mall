@@ -63,9 +63,15 @@
             font-weight: 700; 
             font-size: 16px; 
             margin-bottom: 4px; 
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;          /* 限制最多顯示 2 行，第 3 行才變 ... */
+            -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: normal;            /* 覆蓋掉原本的 nowrap，允許換行 */
+            line-height: 1.4;               /* 設定行高，讓版面更穩定 */
+            height: 2.8em;
+            
         }
         .price { 
             color: var(--danger-red); 
@@ -261,5 +267,6 @@
     </script>
 </body>
 </html>
+
 
 
