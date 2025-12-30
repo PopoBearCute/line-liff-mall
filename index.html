@@ -38,6 +38,9 @@
             display: flex;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            width: 100%;        /* 確保不超出螢幕 */
+            box-sizing: border-box; /* 讓 Padding 不影響寬度 */
+            margin-bottom: 4px;
         }
         .product-img {
             width: 85px;
@@ -50,6 +53,7 @@
         }
         .info { 
             flex: 1; 
+            min-width: 0;
             display: flex; 
             flex-direction: column;
             justify-content: center;
@@ -80,6 +84,8 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-left: 10px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .btn:active { transform: scale(0.95); opacity: 0.9; }
         
@@ -255,4 +261,5 @@
     </script>
 </body>
 </html>
+
 
