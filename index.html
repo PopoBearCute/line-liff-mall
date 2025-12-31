@@ -17,26 +17,23 @@
             margin: 0; padding: 20px 10px;
         }
         .header { text-align: center; margin-bottom: 25px; }
+        .header h1 {
+            font-size: 1.5rem; color: #333; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
+        }
         .product-list { display: flex; flex-direction: column; gap: 25px; }
         
-        /* 泡泡框大卡片 */
+        /* 泡泡框大卡片設計 */
         .product-card {
-            background: #fff;
-            border-radius: 20px;
+            background: #fff; border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden; display: flex; flex-direction: column;
         }
-        /* 圖片放大三倍 (滿版) */
         .img-container {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: #eee;
+            width: 100%; aspect-ratio: 1 / 1; background: #eee;
         }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 資訊區 */
         .info-container { padding: 20px; }
         .product-title {
             font-size: 1.25rem; font-weight: bold; color: #222;
@@ -52,7 +49,6 @@
             display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
         }
 
-        /* 按鈕加大 */
         .action-area { display: flex; flex-direction: column; gap: 12px; }
         .btn {
             border: none; border-radius: 12px; height: 55px;
@@ -65,12 +61,11 @@
     </style>
 </head>
 <body>
-    <div class="header"><h1> 中油團購轉傳中心</h1></div>
+    <div class="header"><h1>中油團購轉傳中心</h1></div>
     <div id="loading">讀取商品清單中...</div>
     <div id="product-list" class="product-list"></div>
 
     <script>
-        // 1. 填入你的 GAS 網址與 LIFF ID
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwfurw3B7wVZhu4lBivBKov-SEP3fOJIch1VH94uKTzaU-g1KccLuAs1HIunShzaNn3/exec";
         const MY_LIFF_ID = "2008798234-SoLQutVF"; 
 
@@ -93,26 +88,36 @@
 
         function renderProducts(products) {
             const container = document.getElementById('product-list');
-            container.innerHTML = products.map(item => `
+            container.innerHTML = products.map(item => {
+                // 安全處理名稱中的單引號，避免 JavaScript 報錯
+                const safeName = item.name.replace(/'/g, "\\'");
+                return `
                 <div class="product-card">
-                    <div class="img-container"><img src="${item.img}"></div>
+                    <div class="img-container"><img src="${item.img}" onerror="this.src='https://via.placeholder.com/300?text=圖片載入失敗'"></div>
                     <div class="info-container">
                         <div class="product-title">${item.name}</div>
                         <div class="price-row">
-                            <span class="original-price">NT$ ${item.origPrice}</span>
+                            <span class="original-price">NT$ ${item.origPrice || ''}</span>
                             <span class="group-price">NT$ ${item.price}</span>
                         </div>
                         <div class="product-desc">${item.desc}</div>
                         <div class="action-area">
                             <a href="${item.link}" target="_blank" class="btn btn-blue">前往商品頁</a>
-                            <button class="btn btn-green" onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}')">分享</button>
+                            <button class="btn btn-green" onclick="shareFlex('${safeName}', '${item.price}', '${item.img}', '${item.link}', '${item.origPrice}')">分享至群組</button>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
-        function shareFlex(name, price, img, link) {
+        function shareFlex(name, price, img, link, origPrice) {
+            // Flex Message 內的價格顯示邏輯：若原價存在則顯示划線
+            const priceContents = [];
+            if (origPrice && origPrice !== "") {
+                priceContents.push({ "type": "text", "text": "NT$ " + origPrice, "color": "#aaaaaa", "size": "sm", "decoration": "line-through", "flex": 0 });
+            }
+            priceContents.push({ "type": "text", "text": "NT$ " + price, "weight": "bold", "size": "xl", "color": "#ff4d4f", "flex": 0 });
+
             liff.shareTargetPicker([{
                 "type": "flex",
                 "altText": "【限定團購】" + name,
@@ -124,11 +129,8 @@
                     "contents": [
                       { "type": "text", "text": name, "weight": "bold", "size": "xl", "wrap": true },
                       {
-                        "type": "box", "layout": "baseline", "margin": "md",
-                        "contents": [
-                          { "type": "text", "text": "團購價", "color": "#aaaaaa", "size": "sm", "flex": 2 },
-                          { "type": "text", "text": "NT$ " + price, "weight": "bold", "size": "xl", "color": "#ff4d4f", "flex": 5 }
-                        ]
+                        "type": "box", "layout": "baseline", "margin": "md", "spacing": "sm",
+                        "contents": priceContents
                       }
                     ]
                   },
@@ -147,5 +149,3 @@
     </script>
 </body>
 </html>
-
-
