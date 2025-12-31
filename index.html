@@ -61,15 +61,15 @@
     </style>
 </head>
 <body>
-    <div class="header"><h1> 中油團購轉傳中心</h1></div>
-    <div id="loading">讀取商品清單中...</div>
+    <div class="header"><h1> 請團購主挑選後分享至群組</h1></div>
+    <div id="loading">>給我5秒鐘..讀取商品清單中..</div>
     <div id="product-list" class="product-list"></div>
 
     <script>
-        // 1. 填入你的 GAS 網址與 LIFF ID
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwfurw3B7wVZhu4lBivBKov-SEP3+OJIch1VH94uKTzaU-g1KccLuAs1HIunShzaNn3/exec";
+        // 1. 正確的 GAS 網址 (已修正字元 f)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwfurw3B7wVZhu4lBivBKov-SEP3fOJIch1VH94uKTzaU-g1KccLuAs1HIunShzaNn3/exec";
         const MY_LIFF_ID = "2008798234-SoLQutVF"; 
-        const LOGIN_CHECK_URL = "https://ecmall.cpc.com.tw/cpcpay/eshop/"; // 步驟 1 的連結 [cite: 2025-12-31]
+        const LOGIN_CHECK_URL = "https://ecmall.cpc.com.tw/cpcpay/eshop/"; 
 
         async function initLIFF() {
             try {
@@ -116,18 +116,14 @@
                 "contents": {
                   "type": "bubble",
                   "hero": { 
-                    "type": "image", 
-                    "url": img, 
-                    "size": "full", 
-                    "aspectRatio": "1:1", 
-                    "aspectMode": "fit",
-                    "backgroundColor": "#ffffff"
+                    "type": "image", "url": img, "size": "full", 
+                    "aspectRatio": "1:1", "aspectMode": "fit", "backgroundColor": "#ffffff" 
                   },
                   "body": {
                     "type": "box", "layout": "vertical",
                     "contents": [
-                      { 
-                        "type": "text", 
+                      {
+                        "type": "text",
                         "wrap": true,
                         "contents": [
                           { "type": "span", "text": name, "weight": "bold", "size": "lg" },
@@ -137,19 +133,15 @@
                       {
                         "type": "text",
                         "text": "團購價 NT$ " + price,
-                        "weight": "bold",
-                        "size": "xl",
-                        "color": "#ff4d4f",
-                        "align": "end",
+                        "weight": "bold", "size": "xl", "color": "#ff4d4f",
+                        "align": "end", // 整串紅色靠右
                         "margin": "md"
                       },
                       { 
                         "type": "text", 
                         "text": "⚠️先完成登入，再點擊訂購", 
-                        "color": "#ff4d4f", 
-                        "size": "xs", 
-                        "margin": "md", 
-                        "align": "center",
+                        "color": "#ff4d4f", "size": "xs", "margin": "lg",
+                        "align": "center", // 置中
                         "wrap": true 
                       }
                     ]
@@ -163,7 +155,7 @@
                       },
                       { 
                         "type": "button", "style": "primary", "color": "#28a745",
-                        "action": { "type": "uri", "label": "2. 前往商品，立即訂購", "uri": link }                
+                        "action": { "type": "uri", "label": "2. 已登入，立即訂購", "uri": link }                
                       }
                     ]
                   }
