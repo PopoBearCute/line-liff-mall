@@ -8,6 +8,7 @@
     <style>
         :root {
             --line-green: #00c300;
+            --link-blue: #007aff;
             --danger-red: #ff3b30;
             --bg-gray: #f2f2f7;
             --card-white: #ffffff;
@@ -18,7 +19,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-gray);
             margin: 0;
-            padding: 12px; /* 稍微縮小邊距，增加內部空間 */
+            padding: 12px;
             color: var(--text-main);
             box-sizing: border-box;
         }
@@ -34,91 +35,95 @@
             width: 100%;
         }
 
-        /* 泡泡框容器優化 */
         .card {
             background: var(--card-white);
             border-radius: 16px;
             padding: 12px;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* 改為頂端對齊，適應更多文字內容 */
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            width: 100%;           /* 絕對適應手機寬度 */
-            box-sizing: border-box; /* 確保 padding 不撐破寬度 */
+            width: 100%;
+            box-sizing: border-box;
             position: relative;
-            overflow: hidden;
         }
 
-        /* 圖片容器：固定比例，防止擠壓 */
         .product-img {
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             border-radius: 10px;
-            object-fit: cover;      /* 確保不變形 */
+            object-fit: cover;
             background-color: #f8f8f8;
             margin-right: 12px;
-            flex-shrink: 0;         /* 嚴禁縮小 */
+            flex-shrink: 0;
             border: 1px solid #f0f0f0;
         }
 
-        /* 資訊區塊：使用 flex-1 佔滿剩餘空間 */
         .info { 
             flex: 1; 
-            min-width: 0;           /* 關鍵：防止長文字強行撐開寬度 */
+            min-width: 0; 
             display: flex; 
             flex-direction: column;
-            justify-content: space-between;
         }
 
-        /* 標題限制：解決長文字跑版 */
         .name { 
             font-weight: 700; 
             font-size: 15px; 
-            line-height: 1.4;
+            line-height: 1.3;
             color: var(--text-main);
-            margin-bottom: 4px; 
-            
-            /* 多行溢出省略（防禦型設定） */
+            margin-bottom: 4px;
             display: -webkit-box;
-            -webkit-line-clamp: 2;   /* 嚴格限制 2 行 */
+            -webkit-line-clamp: 2; /* 標題限制 2 行 */
             -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
-            
-            /* 固定高度，確保版面對齊 */
-            height: 2.8em; 
-            word-break: break-all;   /* 防止長英文/網址不換行 */
+            word-break: break-all;
         }
 
         .price-row {
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
+            margin-bottom: 6px;
         }
-        .price-label { font-size: 12px; color: var(--text-sub); }
         .price { 
             color: var(--danger-red); 
             font-weight: 800; 
-            font-size: 18px; 
+            font-size: 17px; 
         }
-        
-        /* 按鈕優化：避免在極窄螢幕上變形 */
-        .btn {
-            background-color: var(--line-green);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            transition: opacity 0.2s;
+
+        /* [新增] 產品敘述樣式 */
+        .desc {
+            font-size: 12px;
+            color: var(--text-sub);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 敘述強制限制 2 行 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        /* 按鈕容器：垂直堆疊 */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
             margin-left: 8px;
-            flex-shrink: 0;         /* 嚴禁縮小 */
-            white-space: nowrap;
+            flex-shrink: 0;
         }
+
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .btn-share { background-color: var(--line-green); color: white; }
+        .btn-blue { background-color: var(--link-blue); color: white; }
         .btn:active { opacity: 0.7; transform: scale(0.95); }
         
-        /* 診斷面板 */
         #status-panel {
             background: #1c1c1e;
             color: #32d74b;
@@ -127,9 +132,8 @@
             font-size: 11px;
             border-radius: 10px;
             margin-top: 20px;
-            max-height: 120px;
+            max-height: 100px;
             overflow-y: auto;
-            border: 1px solid #3a3a3c;
         }
         .loading-state { text-align: center; padding: 40px 20px; color: var(--text-sub); font-size: 14px; }
     </style>
@@ -137,7 +141,7 @@
 <body>
 
     <div class="header">
-        <h2 style="margin:0; font-size: 20px; letter-spacing: -0.5px;">📦 團購素材分享中心</h2>
+        <h2 style="margin:0; font-size: 20px;">📦 團購素材分享中心</h2>
     </div>
 
     <div id="product-container" class="product-grid">
@@ -148,7 +152,8 @@
 
     <script>
         const LIFF_ID = "2008798234-SoLQutVF";
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwveDKK4Oizva7LvR89c3pJGWqBzAVEIw7n1Mu7Qw8tKwtpk58Osc8oDd1iasBq2wz8/exec"; 
+        // 更新為你提供的新 GAS URL
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxlXVsh4MqBC3YZ63IwiJa2SyPdAfMbdoQzku2NCsJ02d0PzVXzLPkrPWBkkzvxvbQe/exec"; 
 
         const logger = (msg) => {
             const panel = document.getElementById('status-panel');
@@ -157,10 +162,8 @@
             panel.scrollTop = panel.scrollHeight;
         };
 
-        // 圖片網址處理邏輯
         function formatImgUrl(url) {
             if (!url || url.trim() === "") return "https://via.placeholder.com/300?text=No+Image";
-            // 處理 Google Drive 預覽
             if (url.includes("drive.google.com")) {
                 const fileId = url.match(/[-\w]{25,}/);
                 return fileId ? `https://drive.google.com/uc?export=view&id=${fileId[0]}` : url;
@@ -174,22 +177,21 @@
                 await liff.init({ liffId: LIFF_ID });
 
                 if (!liff.isLoggedIn()) {
-                    logger("未登入，跳轉至登入頁面...");
                     liff.login();
                     return;
                 }
                 logger("✅ LINE 認證成功");
 
-                logger("正在獲取後端數據...");
+                logger("獲取後端數據中...");
                 const response = await fetch(GAS_API_URL);
                 const data = await response.json();
                 
-                logger(`✅ 資料更新：已載入 ${data.length} 項素材`);
+                logger(`✅ 已載入 ${data.length} 項商品`);
                 render(data);
 
             } catch (err) {
                 logger("❌ 系統錯誤: " + err.message);
-                document.getElementById('product-container').innerHTML = `<div class="loading-state" style="color:var(--danger-red);">連線失敗，請稍後再試。</div>`;
+                document.getElementById('product-container').innerHTML = `<div class="loading-state" style="color:var(--danger-red);">連線失敗。</div>`;
             }
         }
 
@@ -206,13 +208,16 @@
                 <div class="card">
                     <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/80?text=Error'">
                     <div class="info">
-                        <div class="name">${item.name || '未定義商品名稱'}</div>
+                        <div class="name">${item.name || '未定義商品'}</div>
                         <div class="price-row">
-                            <span class="price-label">團購價</span>
                             <span class="price">NT$ ${item.price || '--'}</span>
                         </div>
+                        <div class="desc">${item.desc || '暫無描述'}</div>
                     </div>
-                    <button class="btn" onclick="openShare('${item.name}', '${item.price}', '${imgUrl}', '${item.link}')">分享</button>
+                    <div class="btn-group">
+                        <a href="${item.link || '#'}" class="btn btn-blue" target="_blank">前往商品頁</a>
+                        <button class="btn btn-share" onclick="openShare('${item.name}', '${item.price}', '${imgUrl}', '${item.link}')">分享素材</button>
+                    </div>
                 </div>
                 `;
             }).join('');
@@ -220,7 +225,7 @@
 
         async function openShare(name, price, img, link) {
             if (!liff.isApiAvailable('shareTargetPicker')) {
-                alert("此環境不支援分享功能。");
+                alert("此環境不支援分享。");
                 return;
             }
 
@@ -230,22 +235,14 @@
                     "altText": `【團購推薦】${name}`,
                     "contents": {
                         "type": "bubble",
-                        "hero": {
-                            "type": "image",
-                            "url": img,
-                            "size": "full",
-                            "aspectRatio": "1:1",
-                            "aspectMode": "cover"
-                        },
+                        "hero": { "type": "image", "url": img, "size": "full", "aspectRatio": "1:1", "aspectMode": "cover" },
                         "body": {
                             "type": "box",
                             "layout": "vertical",
                             "contents": [
                                 { "type": "text", "text": name, "weight": "bold", "size": "md", "wrap": true },
                                 { 
-                                    "type": "box", 
-                                    "layout": "baseline", 
-                                    "margin": "md", 
+                                    "type": "box", "layout": "baseline", "margin": "md", 
                                     "contents": [
                                         { "type": "text", "text": "團購價", "color": "#aaaaaa", "size": "xs", "flex": 2 },
                                         { "type": "text", "text": "NT$ " + price, "color": "#ff3b30", "weight": "bold", "size": "lg", "flex": 5 }
@@ -254,21 +251,17 @@
                             ]
                         },
                         "footer": {
-                            "type": "box",
-                            "layout": "vertical",
+                            "type": "box", "layout": "vertical", 
                             "contents": [
                                 {
                                     "type": "button",
                                     "action": { "type": "uri", "label": "立即訂購", "uri": link || "https://line.me" },
-                                    "style": "primary",
-                                    "color": "#00c300",
-                                    "height": "sm"
+                                    "style": "primary", "color": "#00c300", "height": "sm"
                                 }
                             ]
                         }
                     }
                 }]);
-
                 if (result) logger("✅ 分享成功");
             } catch (err) {
                 logger("❌ 分享失敗: " + err.message);
