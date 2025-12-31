@@ -1,272 +1,260 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>團購素材中心 | 分享系統</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中油團購商品分享中心</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         :root {
-            --line-green: #00c300;
-            --link-blue: #007aff;
-            --danger-red: #ff3b30;
-            --bg-gray: #f2f2f7;
-            --card-white: #ffffff;
-            --text-main: #1c1c1e;
-            --text-sub: #8e8e93;
+            --blue-btn: #007bff;
+            --green-btn: #28a745;
+            --bg-color: #f4f7f9;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-gray);
+            background-color: var(--bg-color);
             margin: 0;
-            padding: 12px;
-            color: var(--text-main);
-            box-sizing: border-box;
+            padding: 20px 10px;
         }
+
         .header {
-            margin-bottom: 16px;
-            padding: 10px 5px;
-            border-bottom: 1px solid #d1d1d6;
+            text-align: center;
+            margin-bottom: 25px;
         }
-        .product-grid {
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* 泡泡框大卡片設計 */
+        .product-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 100%;
+            gap: 20px;
         }
-        .card {
-            background: var(--card-white);
-            border-radius: 16px;
-            padding: 12px;
-            display: flex;
-            align-items: flex-start;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .product-img {
-            width: 90px;
-            height: 90px;
-            border-radius: 10px;
-            object-fit: cover;
-            background-color: #f8f8f8;
-            margin-right: 12px;
-            flex-shrink: 0;
-            border: 1px solid #f0f0f0;
-        }
-        .info { 
-            flex: 1; 
-            min-width: 0; 
-            display: flex; 
-            flex-direction: column;
-        }
-        .name { 
-            font-weight: 700; 
-            font-size: 15px; 
-            line-height: 1.3;
-            color: var(--text-main);
-            margin-bottom: 4px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+
+        .product-card {
+            background: #fff;
+            border-radius: 20px; /* 更圓潤的泡泡感 */
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); /* 強化陰影 */
             overflow: hidden;
-            word-break: break-all;
+            transition: transform 0.2s;
         }
-        .price-row {
-            margin-bottom: 4px;
-            display: flex;
-            align-items: baseline;
-            flex-wrap: wrap;
+
+        /* 圖片放大三倍 (滿版垂直) */
+        .img-container {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* 保持正方形 */
+            background: #eee;
         }
-        .orig-price {
-            text-decoration: line-through;
-            color: var(--text-sub);
-            font-size: 12px;
-            margin-right: 6px;
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .price { 
-            color: var(--danger-red); 
-            font-weight: 800; 
-            font-size: 18px; 
+
+        /* 資訊區 */
+        .info-container {
+            padding: 20px;
         }
-        .desc {
-            font-size: 12px;
-            color: var(--text-sub);
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #222;
+            margin: 0 0 10px 0;
             line-height: 1.4;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 2; /* 限制兩行 */
             -webkit-box-orient: vertical;
             overflow: hidden;
-            margin-bottom: 4px;
         }
-        .btn-group {
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .original-price {
+            font-size: 0.9rem;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .group-price {
+            font-size: 1.4rem;
+            color: #ff4d4f;
+            font-weight: 800;
+        }
+
+        .product-desc {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* 限制描述為三行 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 加大按鈕區 */
+        .action-area {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-left: 8px;
-            flex-shrink: 0;
+            gap: 10px;
         }
+
         .btn {
             border: none;
-            padding: 8px 10px;
-            border-radius: 8px;
+            border-radius: 12px;
+            height: 50px; /* 加大高度 */
+            font-size: 1.1rem;
             font-weight: bold;
-            font-size: 12px;
+            color: #fff;
             cursor: pointer;
-            text-align: center;
-            white-space: nowrap;
-            text-decoration: none;
             transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
-        .btn-share { background-color: var(--line-green); color: white; }
-        .btn-blue { background-color: var(--link-blue); color: white; }
-        .btn:active { opacity: 0.7; transform: scale(0.95); }
-        
-        #status-panel {
-            background: #1c1c1e;
-            color: #32d74b;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 11px;
-            border-radius: 10px;
-            margin-top: 20px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-        .loading-state { text-align: center; padding: 40px 20px; color: var(--text-sub); font-size: 14px; }
+
+        .btn:active { opacity: 0.8; }
+
+        .btn-blue { background-color: var(--blue-btn); }
+        .btn-green { background-color: var(--green-btn); }
+
+        /* 載入中動畫 */
+        #loading { text-align: center; color: #666; padding: 50px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2 style="margin:0; font-size: 20px;">📦 團購素材分享中心</h2>
+        <h1>團購素材分享中心</h1>
     </div>
 
-    <div id="product-container" class="product-grid">
-        <div class="loading-state">🔄 正在同步 1/1 最新商品資訊...</div>
-    </div>
-
-    <div id="status-panel">系統初始化中...</div>
+    <div id="loading">讀取商品清單中...</div>
+    <div id="product-list" class="product-list"></div>
 
     <script>
-        const LIFF_ID = "2008798234-SoLQutVF";
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyJqZMfT7VnRt-TrfvL9IDsOBNQE6_Ee3tRw3Mrlel4F4In7JVzES4S7BIz44tqf24F/exec"; 
+        // 請替換為你的 GAS 部署網址
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyJqZMfT7VnRt-TrfvL9IDsOBNQE6_Ee3tRw3Mrlel4F4In7JVzES4S7BIz44tqf24F/exec"; 
 
-        const logger = (msg) => {
-            const panel = document.getElementById('status-panel');
-            const time = new Date().toLocaleTimeString([], { hour12: false });
-            panel.innerHTML += `<div>[${time}] ${msg}</div>`;
-            panel.scrollTop = panel.scrollHeight;
-        };
-
-        function formatImgUrl(url) {
-            if (!url || url.trim() === "") return "https://via.placeholder.com/300?text=No+Image";
-            if (url.includes("drive.google.com")) {
-                const fileId = url.match(/[-\w]{25,}/);
-                return fileId ? `https://drive.google.com/uc?export=view&id=${fileId[0]}` : url;
-            }
-            return url;
-        }
-
-        async function main() {
+        async function initLIFF() {
             try {
-                logger("發起 LINE SDK 初始化...");
-                await liff.init({ liffId: LIFF_ID });
-
+                await liff.init({ liffId: "你的_LIFF_ID" });
                 if (!liff.isLoggedIn()) {
                     liff.login();
-                    return;
+                } else {
+                    fetchProducts();
                 }
-                logger("✅ LINE 認證成功");
-
-                logger("獲取 1/1 商品數據中...");
-                const response = await fetch(GAS_API_URL);
-                const data = await response.json();
-                
-                logger(`✅ 已載入 ${data.length} 項商品素材`);
-                render(data);
-
             } catch (err) {
-                logger("❌ 系統錯誤: " + err.message);
-                document.getElementById('product-container').innerHTML = `<div class="loading-state" style="color:var(--danger-red);">連線失敗，請檢查網路。</div>`;
+                console.error("LIFF 初始化失敗", err);
             }
         }
 
-        function render(items) {
-            const container = document.getElementById('product-container');
-            if (!items || items.length === 0) {
-                container.innerHTML = '<div class="loading-state">目前暫無商品素材。</div>';
-                return;
+        async function fetchProducts() {
+            try {
+                const response = await fetch(GAS_URL);
+                const data = await response.json();
+                renderProducts(data);
+                document.getElementById('loading').style.display = 'none';
+            } catch (err) {
+                document.getElementById('loading').innerText = "連線失敗，請稍後再試";
             }
+        }
 
-            container.innerHTML = items.map(item => {
-                const imgUrl = formatImgUrl(item.img);
-                return `
-                <div class="card">
-                    <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/90?text=Error'">
-                    <div class="info">
-                        <div class="name">${item.name || '未定義商品'}</div>
-                        <div class="price-row">
-                            ${item.origPrice ? `<span class="orig-price">NT$ ${item.origPrice}</span>` : ''}
-                            <span class="price">NT$ ${item.price || '--'}</span>
-                        </div>
-                        <div class="desc">${item.desc || '暫無描述'}</div>
+        function renderProducts(products) {
+            const container = document.getElementById('product-list');
+            // 注意：這裡的 index 需對應你 Sheets 的欄位順序
+            // A: 名稱[0], B: 價格[1], C: 圖片[2], D: 導購連結[3], E: 描述[4], F: 原價[5]
+            container.innerHTML = products.map(item => `
+                <div class="product-card">
+                    <div class="img-container">
+                        <img src="${item[2]}" alt="商品圖片">
                     </div>
-                    <div class="btn-group">
-                        <a href="${item.link || '#'}" class="btn btn-blue" target="_blank">前往商品頁</a>
-                        <button class="btn btn-share" onclick="openShare('${item.name}', '${item.price}', '${imgUrl}', '${item.link}', '${item.origPrice}')">分享素材</button>
+                    <div class="info-container">
+                        <div class="product-title">${item[0]}</div>
+                        <div class="price-row">
+                            <span class="original-price">NT$ ${item[5] || (parseInt(item[1])*1.5).toFixed(0)}</span>
+                            <span class="group-price">NT$ ${item[1]}</span>
+                        </div>
+                        <div class="product-desc">${item[4] || '暫無產品敘述，請點擊下方連結查看詳情。'}</div>
+                        
+                        <div class="action-area">
+                            <a href="${item[3]}" target="_blank" class="btn btn-blue">前往商品頁</a>
+                            <button class="btn btn-green" onclick="shareFlex('${item[0]}', '${item[1]}', '${item[2]}', '${item[3]}')">分享素材</button>
+                        </div>
                     </div>
                 </div>
-                `;
-            }).join('');
+            `).join('');
         }
 
-        async function openShare(name, price, img, link, origPrice) {
+        function shareFlex(name, price, img, link) {
             if (!liff.isApiAvailable('shareTargetPicker')) {
-                alert("此環境不支援分享。");
+                alert("請在手機版 LINE 中使用分享功能");
                 return;
             }
 
-            try {
-                const result = await liff.shareTargetPicker([{
-                    "type": "flex",
-                    "altText": `【團購推薦】${name}`,
-                    "contents": {
-                        "type": "bubble",
-                        "hero": { "type": "image", "url": img, "size": "full", "aspectRatio": "1:1", "aspectMode": "cover" },
-                        "body": {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                                { "type": "text", "text": name, "weight": "bold", "size": "md", "wrap": true },
-                                { 
-                                    "type": "box", "layout": "baseline", "margin": "md", 
-                                    "contents": [
-                                        { "type": "text", "text": "原價 NT$ " + (origPrice || "--"), "color": "#aaaaaa", "size": "xs", "decoration": "line-through", "flex": 3 },
-                                        { "type": "text", "text": "團購價 NT$ " + price, "color": "#ff3b30", "weight": "bold", "size": "md", "flex": 4 }
-                                    ]
-                                }
-                            ]
-                        },
-                        "footer": {
-                            "type": "box", "layout": "vertical", 
-                            "contents": [
-                                {
-                                    "type": "button",
-                                    "action": { "type": "uri", "label": "立即訂購", "uri": link || "https://line.me" },
-                                    "style": "primary", "color": "#00c300", "height": "sm"
-                                }
-                            ]
-                        }
-                    }
-                }]);
-                if (result) logger("✅ 素材已分享至群組");
-            } catch (err) {
-                logger("❌ 分享失敗: " + err.message);
-            }
+            liff.shareTargetPicker([{
+                "type": "flex",
+                "altText": "【限定團購】" + name,
+                "contents": {
+                  "type": "bubble",
+                  "hero": {
+                    "type": "image",
+                    "url": img,
+                    "size": "full",
+                    "aspectRatio": "20:13",
+                    "aspectMode": "cover"
+                  },
+                  "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                      { "type": "text", "text": name, "weight": "bold", "size": "xl", "wrap": true },
+                      {
+                        "type": "box",
+                        "layout": "baseline",
+                        "contents": [
+                          { "type": "text", "text": "團購價", "color": "#aaaaaa", "size": "sm", "flex": 2 },
+                          { "type": "text", "text": "NT$ " + price, "weight": "bold", "size": "xl", "color": "#ff4d4f", "flex": 5 }
+                        ],
+                        "margin": "md"
+                      }
+                    ]
+                  },
+                  "footer": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                      {
+                        "type": "button",
+                        "action": { "type": "uri", "label": "立即訂購", "uri": link },
+                        "style": "primary",
+                        "color": "#28a745"
+                      }
+                    ]
+                  }
+                }
+            }]).then(() => {
+                console.log("分享成功");
+            }).catch(err => console.error(err));
         }
 
-        window.addEventListener('load', main);
+        initLIFF();
     </script>
 </body>
 </html>
