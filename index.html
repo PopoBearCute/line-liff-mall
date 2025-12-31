@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中油團購素材分享中心</title>
+    <title>中油團購轉傳中心</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         :root {
@@ -65,7 +65,7 @@
     </style>
 </head>
 <body>
-    <div class="header"><h1> 團購素材分享中心</h1></div>
+    <div class="header"><h1> 中油團購轉傳中心</h1></div>
     <div id="loading">讀取商品清單中...</div>
     <div id="product-list" class="product-list"></div>
 
@@ -105,7 +105,7 @@
                         <div class="product-desc">${item.desc}</div>
                         <div class="action-area">
                             <a href="${item.link}" target="_blank" class="btn btn-blue">前往商品頁</a>
-                            <button class="btn btn-green" onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}')">分享素材</button>
+                            <button class="btn btn-green" onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}')">分享</button>
                         </div>
                     </div>
                 </div>
@@ -147,4 +147,5 @@
     </script>
 </body>
 </html>
+
 
