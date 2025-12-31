@@ -67,7 +67,7 @@
 
     <script>
         // 1. 填入你的 GAS 網址與 LIFF ID
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwfurw3B7wVZhu4lBivBKov-SEP3fOJIch1VH94uKTzaU-g1KccLuAs1HIunShzaNn3/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwfurw3B7wVZhu4lBivBKov-SEP3+OJIch1VH94uKTzaU-g1KccLuAs1HIunShzaNn3/exec";
         const MY_LIFF_ID = "2008798234-SoLQutVF"; 
         const LOGIN_CHECK_URL = "https://ecmall.cpc.com.tw/cpcpay/eshop/"; // 步驟 1 的連結 [cite: 2025-12-31]
 
@@ -102,32 +102,56 @@
                         <div class="product-desc">${item.desc || ''}</div>
                         <div class="action-area">
                             <a href="${item.link}" target="_blank" class="btn btn-blue">前往商品頁</a>
-                            <button class="btn btn-green" onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}')">分享</button>
+                            <button class="btn btn-green" onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}', '${item.origPrice || ''}')">分享</button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function shareFlex(name, price, img, link) {
+        function shareFlex(name, price, img, link, origPrice) {
             liff.shareTargetPicker([{
                 "type": "flex",
                 "altText": "【限定團購】" + name,
                 "contents": {
                   "type": "bubble",
-                  "hero": { "type": "image", "url": img, "size": "full", "aspectRatio": "1:1", "aspectMode": "fit" },
+                  "hero": { 
+                    "type": "image", 
+                    "url": img, 
+                    "size": "full", 
+                    "aspectRatio": "1:1", 
+                    "aspectMode": "fit",
+                    "backgroundColor": "#ffffff"
+                  },
                   "body": {
                     "type": "box", "layout": "vertical",
                     "contents": [
-                      { "type": "text", "text": name, "weight": "bold", "size": "xl", "wrap": true },
-                      {
-                        "type": "box", "layout": "baseline", "margin": "md",
+                      { 
+                        "type": "text", 
+                        "wrap": true,
                         "contents": [
-                          { "type": "text", "text": "團購價", "color": "#aaaaaa", "size": "sm", "flex": 2 },
-                          { "type": "text", "text": "NT$ " + price, "weight": "bold", "size": "xl", "color": "#ff4d4f", "flex": 5 }
+                          { "type": "span", "text": name, "weight": "bold", "size": "lg" },
+                          { "type": "span", "text": origPrice ? "  NT$ " + origPrice : "", "color": "#aaaaaa", "size": "sm", "decoration": "line-through" }
                         ]
                       },
-                      { "type": "text", "text": "⚠️先完成登入，再點擊訂購", "color": "#ff4d4f", "size": "xs", "margin": "md", "wrap": true }
+                      {
+                        "type": "text",
+                        "text": "團購價 NT$ " + price,
+                        "weight": "bold",
+                        "size": "xl",
+                        "color": "#ff4d4f",
+                        "align": "end",
+                        "margin": "md"
+                      },
+                      { 
+                        "type": "text", 
+                        "text": "⚠️先完成登入，再點擊訂購", 
+                        "color": "#ff4d4f", 
+                        "size": "xs", 
+                        "margin": "md", 
+                        "align": "center",
+                        "wrap": true 
+                      }
                     ]
                   },
                   "footer": {
@@ -139,7 +163,7 @@
                       },
                       { 
                         "type": "button", "style": "primary", "color": "#28a745",
-                        "action": { "type": "uri", "label": "2. 前往商品，立即訂購", "uri": link }               
+                        "action": { "type": "uri", "label": "2. 前往商品，立即訂購", "uri": link }                
                       }
                     ]
                   }
@@ -150,4 +174,3 @@
     </script>
 </body>
 </html>
-
