@@ -101,7 +101,7 @@
                         </div>
                         <div class="product-desc">${item.desc || ''}</div>
                         <div class="action-area">
-                            <a href="${item.link}" target="_blank" class="btn btn-blue">前往商品頁</a>
+                            <a href="${item.leaderLink}" target="_blank" class="btn btn-blue">團購主前往選品</a>
                             <button class="btn btn-green" onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}', '${item.origPrice || ''}')">分享</button>
                         </div>
                     </div>
@@ -166,4 +166,5 @@
     </script>
 </body>
 </html>
+
 
