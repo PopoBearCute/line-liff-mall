@@ -21,6 +21,15 @@
             font-size: 1.3rem; color: #000; line-height: 1.6;
             display: block; font-weight: bold;
         }
+        .batch-indicator {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: #4a5568;
+            margin-top: 5px;
+        }
         .product-list { display: flex; flex-direction: column; gap: 25px; }
         
         /* 泡泡框大卡片設計 */
@@ -54,6 +63,7 @@
             border: none; border-radius: 12px; height: 55px;
             font-size: 1.15rem; font-weight: bold; color: #fff;
             display: flex; align-items: center; justify-content: center; text-decoration: none;
+            cursor: pointer;
         }
         .btn-blue { background-color: var(--blue-btn); }
         .btn-green { background-color: var(--green-btn); }
@@ -63,46 +73,70 @@
 <body>
     <div class="header">
         <h1 id="dynamic-instruction">讀取指令中...</h1>
+        <div id="current-sheet" class="batch-indicator"></div>
     </div>
     
     <div id="loading">>給我5秒鐘..讀取商品清單中..</div>
     <div id="product-list" class="product-list"></div>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbx6m05ZrciJEaZf85Fdt9D391CIlVE7DjZNCUXIqdDuDH7hJoEkfesVm9YwSDWiHqXk/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwWHeA6Q-JQFtitC-jeuVkfjyif6PzKoioclDn8XyUw4ca7OfXH7nXqLE53YmZCey20/exec";
         const MY_LIFF_ID = "2008798234-SoLQutVF"; 
-        const LOGIN_CHECK_URL = "https://cpcbcs.cpc.com.tw/cpcpay/eshop/?p1=g&p2=122"; 
 
-        // 取得網址參數模式
+        // 1. 取得網址參數
         const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode') || 'share'; // 預設為分享模式
+        const mode = urlParams.get('mode') || 'share'; 
+        const targetSheet = urlParams.get('sheet') || 'Sheet1'; // 動態識別要讀取哪一張表
+
+        // 顯示目前載入的批次（輔助檢查）
+        document.getElementById('current-sheet').innerText = `目前清單：${targetSheet}`;
 
         async function initLIFF() {
             try {
                 await liff.init({ liffId: MY_LIFF_ID });
-                if (!liff.isLoggedIn()) { liff.login(); } 
-                else { fetchProducts(); }
-            } catch (err) { console.error(err); }
+                if (!liff.isLoggedIn()) { 
+                    liff.login(); 
+                } else { 
+                    fetchProducts(); 
+                }
+            } catch (err) { 
+                console.error(err); 
+            }
         }
 
         async function fetchProducts() {
             try {
-                const response = await fetch(GAS_URL);
+                // 2. 將參數帶入 GAS URL
+                const fetchUrl = `${GAS_URL}?sheet=${encodeURIComponent(targetSheet)}`;
+                const response = await fetch(fetchUrl);
                 const data = await response.json();
+                
+                // 檢查是否回傳系統錯誤（找不到分頁）
+                if (data.length > 0 && data[0].desc && data[0].desc.includes("找不到")) {
+                    document.getElementById('loading').innerText = data[0].desc;
+                    return;
+                }
+                
                 renderProducts(data);
                 document.getElementById('loading').style.display = 'none';
-            } catch (err) { document.getElementById('loading').innerText = "連線失敗"; }
+            } catch (err) { 
+                document.getElementById('loading').innerText = "連線失敗，請確認 GAS 連結是否正確或已發佈為新版本"; 
+            }
         }
 
         function renderProducts(products) {
             const container = document.getElementById('product-list');
             const headerText = document.getElementById('dynamic-instruction');
 
-            // 根據模式設定頂部說明文字
             if (mode === 'pick') {
-                headerText.innerHTML = "1. 團購主請至站取後台選品<br>所屬站點方可取得販賣資格";
+                headerText.innerHTML = "團購主請至站取後台選品<br>所屬站點方可販賣";
             } else {
                 headerText.innerHTML = "活動期間開始以後<br>請點擊綠色按鈕轉傳分享至群組";
+            }
+
+            if (products.length === 0) {
+                container.innerHTML = "<p style='text-align:center;color:#999;'>此清單目前沒有商品</p>";
+                return;
             }
 
             container.innerHTML = products.map(item => `
@@ -118,8 +152,6 @@
                         </div>
                         <div class="product-desc">${item.desc || ''}</div>
                         <div class="action-area">
-                            
-                            
                             <button class="btn btn-green" 
                                     style="display: ${mode === 'share' ? 'flex' : 'none'}"
                                     onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}', '${item.origPrice || ''}')">
@@ -159,6 +191,16 @@
                         "align": "end", "margin": "md"
                       }
                     ]
+                  },
+                  "footer": {
+                    "type": "box", "layout": "vertical",
+                    "contents": [
+                      {
+                        "type": "button",
+                        "action": { "type": "uri", "label": "立即搶購", "uri": link },
+                        "style": "primary", "color": "#28a745"
+                      }
+                    ]
                   }
                 }
             }]);
@@ -167,5 +209,3 @@
     </script>
 </body>
 </html>
-
-
