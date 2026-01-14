@@ -83,12 +83,10 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwWHeA6Q-JQFtitC-jeuVkfjyif6PzKoioclDn8XyUw4ca7OfXH7nXqLE53YmZCey20/exec";
         const MY_LIFF_ID = "2008798234-SoLQutVF"; 
 
-        // 1. 取得網址參數
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode') || 'share'; 
-        const targetSheet = urlParams.get('sheet') || 'Sheet1'; // 動態識別要讀取哪一張表
+        const targetSheet = urlParams.get('sheet') || 'Sheet1';
 
-        // 顯示目前載入的批次（輔助檢查）
         document.getElementById('current-sheet').innerText = `目前清單：${targetSheet}`;
 
         async function initLIFF() {
@@ -106,12 +104,10 @@
 
         async function fetchProducts() {
             try {
-                // 2. 將參數帶入 GAS URL
                 const fetchUrl = `${GAS_URL}?sheet=${encodeURIComponent(targetSheet)}`;
                 const response = await fetch(fetchUrl);
                 const data = await response.json();
                 
-                // 檢查是否回傳系統錯誤（找不到分頁）
                 if (data.length > 0 && data[0].desc && data[0].desc.includes("找不到")) {
                     document.getElementById('loading').innerText = data[0].desc;
                     return;
@@ -120,7 +116,7 @@
                 renderProducts(data);
                 document.getElementById('loading').style.display = 'none';
             } catch (err) { 
-                document.getElementById('loading').innerText = "連線失敗，請確認 GAS 連結是否正確或已發佈為新版本"; 
+                document.getElementById('loading').innerText = "連線失敗，請確認資料源。"; 
             }
         }
 
@@ -152,11 +148,18 @@
                         </div>
                         <div class="product-desc">${item.desc || ''}</div>
                         <div class="action-area">
+                            <!-- 按鈕 1：分享至群組 (綠色) -->
                             <button class="btn btn-green" 
                                     style="display: ${mode === 'share' ? 'flex' : 'none'}"
                                     onclick="shareFlex('${item.name.replace(/'/g, "\\'")}', '${item.price}', '${item.img}', '${item.link}', '${item.origPrice || ''}')">
                                 分享至群組
                             </button>
+
+                            <!-- 按鈕 2：立即下單 (藍色) -->
+                            <a href="${item.link}" target="_blank" class="btn btn-blue"
+                               style="display: ${mode === 'share' ? 'flex' : 'none'}; text-decoration: none;">
+                                立即下單
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -197,16 +200,16 @@
                     "contents": [
                       {
                         "type": "button",
-                        "action": { "type": "uri", "label": "立即下單", "uri": link },
+                        "action": { "type": "uri", "label": "立即搶購", "uri": link },
                         "style": "primary", "color": "#28a745"
                       },
                       {
                         "type": "button",
                         "action": { "type": "uri", "label": "立即下單", "uri": link },
                         "style": "primary", 
-                        "color": "#007bff", // 使用定義的藍色 (#007bff)
-                        "margin": "md"      // 加上 md (中等) 間距，避免與上方按鈕黏住
-                      }  
+                        "color": "#007bff",
+                        "margin": "md"
+                      }
                     ]
                   }
                 }
@@ -216,5 +219,3 @@
     </script>
 </body>
 </html>
-
-
