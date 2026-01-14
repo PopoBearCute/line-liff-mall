@@ -197,9 +197,16 @@
                     "contents": [
                       {
                         "type": "button",
-                        "action": { "type": "uri", "label": "立即搶購", "uri": link },
+                        "action": { "type": "uri", "label": "立即下單", "uri": link },
                         "style": "primary", "color": "#28a745"
                       }
+                      {
+                        "type": "button",
+                        "action": { "type": "uri", "label": "立即下單", "uri": link },
+                        "style": "primary", 
+                        "color": "#007bff", // 使用定義的藍色 (#007bff)
+                        "margin": "md"      // 加上 md (中等) 間距，避免與上方按鈕黏住
+                      }  
                     ]
                   }
                 }
@@ -209,3 +216,4 @@
     </script>
 </body>
 </html>
+
